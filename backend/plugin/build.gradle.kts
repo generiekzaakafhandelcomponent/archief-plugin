@@ -1,3 +1,6 @@
+val kotlinLoggingVersion: String by project
+val mockitoKotlinVersion: String by project
+
 dockerCompose {
     setProjectName("archief")
     isRequiredBy(project.tasks.integrationTesting)
@@ -16,12 +19,12 @@ dependencies {
     implementation("com.ritense.valtimo:notificaties-api")
     implementation("com.ritense.valtimo:zaken-api")
 
-    implementation("io.github.oshai:kotlin-logging:7.0.3")
+    implementation("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
