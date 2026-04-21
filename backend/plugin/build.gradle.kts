@@ -11,17 +11,17 @@ dockerCompose {
 }
 
 dependencies {
-    implementation("com.ritense.valtimo:case")
-    implementation("com.ritense.valtimo:core")
-    implementation("com.ritense.valtimo:contract")
-    implementation("com.ritense.valtimo:process-document")
-    implementation("com.ritense.valtimo:plugin-valtimo")
-    implementation("com.ritense.valtimo:notificaties-api")
-    implementation("com.ritense.valtimo:zaken-api")
+    compileOnly("com.ritense.valtimo:case")
+    compileOnly("com.ritense.valtimo:core")
+    compileOnly("com.ritense.valtimo:contract")
+    compileOnly("com.ritense.valtimo:process-document")
+    compileOnly("com.ritense.valtimo:plugin-valtimo")
+    compileOnly("com.ritense.valtimo:notificaties-api")
+    compileOnly("com.ritense.valtimo:zaken-api")
 
-    implementation("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    compileOnly("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
+    compileOnly("org.springframework.boot:spring-boot-starter")
+    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
