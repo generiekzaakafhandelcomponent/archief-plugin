@@ -34,9 +34,8 @@ class ArchiefPluginFactory(
     private val repositoryService: RepositoryService,
     private val jdbcTemplate: JdbcTemplate,
 ) : PluginFactory<ArchiefPlugin>(pluginService) {
-
-    override fun create(): ArchiefPlugin {
-        return ArchiefPlugin(
+    override fun create(): ArchiefPlugin =
+        ArchiefPlugin(
             documentService,
             zaakInstanceLinkRepository,
             processDocumentAssociationService,
@@ -44,5 +43,4 @@ class ArchiefPluginFactory(
             repositoryService,
             jdbcTemplate,
         )
-    }
 }

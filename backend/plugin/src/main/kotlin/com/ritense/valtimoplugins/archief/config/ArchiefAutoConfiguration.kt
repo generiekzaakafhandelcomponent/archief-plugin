@@ -16,23 +16,22 @@
 
 package com.ritense.valtimoplugins.archief.config
 
-import com.ritense.valtimoplugins.archief.ArchiefPluginEventListener
-import com.ritense.valtimoplugins.archief.ArchiefPluginFactory
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimoplugins.archief.ArchiefPluginEventListener
+import com.ritense.valtimoplugins.archief.ArchiefPluginFactory
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import org.operaton.bpm.engine.RepositoryService
 import org.operaton.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.jdbc.core.JdbcTemplate
 
 @AutoConfiguration
 class ArchiefAutoConfiguration {
-
     @Bean
     @ConditionalOnMissingBean(ArchiefPluginFactory::class)
     fun archiefPluginFactory(
@@ -43,8 +42,8 @@ class ArchiefAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         repositoryService: RepositoryService,
         jdbcTemplate: JdbcTemplate,
-    ): ArchiefPluginFactory {
-        return ArchiefPluginFactory(
+    ): ArchiefPluginFactory =
+        ArchiefPluginFactory(
             pluginService,
             documentService,
             zaakInstanceLinkRepository,
@@ -53,17 +52,15 @@ class ArchiefAutoConfiguration {
             repositoryService,
             jdbcTemplate,
         )
-    }
 
     @Bean
     @ConditionalOnMissingBean(ArchiefPluginEventListener::class)
     fun archiefPluginEventListener(
         pluginService: PluginService,
         runtimeService: RuntimeService,
-    ): ArchiefPluginEventListener {
-        return ArchiefPluginEventListener(
+    ): ArchiefPluginEventListener =
+        ArchiefPluginEventListener(
             pluginService,
             runtimeService,
         )
-    }
 }

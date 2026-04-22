@@ -33,7 +33,6 @@ class ArchiefPluginEventListener(
     private val pluginService: PluginService,
     private val runtimeService: RuntimeService,
 ) {
-
     @Transactional
     @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
@@ -44,32 +43,39 @@ class ArchiefPluginEventListener(
             return
         }
 
-        logger.info { "Archief notification matched. Kanaal: '${event.kanaal}', resourceUrl: '${event.resourceUrl}'. Starting process '${archiefPlugin.processToStart}'." }
+        logger.info {
+            "Archief notification matched. Kanaal: '${event.kanaal}', resourceUrl: '${event.resourceUrl}'. Starting process '${archiefPlugin.processToStart}'."
+        }
 
-        val processVariables = mutableMapOf<String, Any?>(
-            "kanaal" to event.kanaal,
-            "resourceUrl" to event.resourceUrl,
-            "hoofdObject" to event.hoofdObject,
-            "actie" to event.actie,
-        )
+        val processVariables =
+            mutableMapOf<String, Any?>(
+                "kanaal" to event.kanaal,
+                "resourceUrl" to event.resourceUrl,
+                "hoofdObject" to event.hoofdObject,
+                "actie" to event.actie,
+            )
         event.kenmerken.forEach { (key, value) -> processVariables[key] = value }
 
-        val processInstance = runtimeService.startProcessInstanceByKey(
-            archiefPlugin.processToStart,
-            processVariables,
-        )
+        val processInstance =
+            runtimeService.startProcessInstanceByKey(
+                archiefPlugin.processToStart,
+                processVariables,
+            )
 
-        logger.info { "Process '${archiefPlugin.processToStart}' started with instance id '${processInstance.processInstanceId}'." }
+        logger.info {
+            "Process '${archiefPlugin.processToStart}' started with instance id '${processInstance.processInstanceId}'."
+        }
     }
 
     private fun findMatchingPlugin(event: NotificatiesApiNotificationReceivedEvent): ArchiefPlugin? {
-        val eventValues = mutableMapOf(
-            "hoofdObject" to event.hoofdObject,
-            "resourceUrl" to event.resourceUrl,
-            "actie" to event.actie,
-            "aanmaakdatum" to event.aanmaakdatum,
-            "kenmerken" to event.kenmerken,
-        )
+        val eventValues =
+            mutableMapOf(
+                "hoofdObject" to event.hoofdObject,
+                "resourceUrl" to event.resourceUrl,
+                "actie" to event.actie,
+                "aanmaakdatum" to event.aanmaakdatum,
+                "kenmerken" to event.kenmerken,
+            )
         event.kenmerken.forEach { (key, value) -> eventValues[key] = value }
         eventValues
             .filter { (key, _) -> !eventValues.contains(normalizeKey(key)) }
@@ -92,9 +98,7 @@ class ArchiefPluginEventListener(
         }
     }
 
-    private fun normalizeKey(key: String): String {
-        return key.lowercase().replace(Regex("[^a-z0-9]"), "")
-    }
+    private fun normalizeKey(key: String): String = key.lowercase().replace(Regex("[^a-z0-9]"), "")
 
     companion object {
         val logger = KotlinLogging.logger {}

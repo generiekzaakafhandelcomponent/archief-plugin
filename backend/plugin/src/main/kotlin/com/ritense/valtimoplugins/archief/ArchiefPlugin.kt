@@ -33,16 +33,16 @@ import com.ritense.valtimoplugins.archief.domain.ArchiefProperties
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.springframework.jdbc.core.JdbcTemplate
 import java.net.URI
 import java.util.UUID
-import org.operaton.bpm.engine.RepositoryService
-import org.springframework.jdbc.core.JdbcTemplate
-import org.operaton.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
     key = "archief",
     title = "Archief",
-    description = "Receives and handles archief event notifications from the Notificaties API"
+    description = "Receives and handles archief event notifications from the Notificaties API",
 )
 class ArchiefPlugin(
     private val documentService: DocumentService,
@@ -52,7 +52,6 @@ class ArchiefPlugin(
     private val repositoryService: RepositoryService,
     private val jdbcTemplate: JdbcTemplate,
 ) : NotificatiesApiListener {
-
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
 
@@ -67,7 +66,7 @@ class ArchiefPlugin(
         key = "link-process-to-document",
         title = "Link system process to document",
         description = "Links the current system process to the document associated with the zaak instance URL",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START],
     )
     fun linkProcessToDocument(
         execution: DelegateExecution,
@@ -88,11 +87,9 @@ class ArchiefPlugin(
         key = "delete-document",
         title = "Delete document",
         description = "Delete the document associated with the current case",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START],
     )
-    fun deleteDocument(
-        execution: DelegateExecution,
-    ) {
+    fun deleteDocument(execution: DelegateExecution) {
         logger.info { "Deleting document with ID '${execution.processBusinessKey}'" }
         val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
@@ -101,21 +98,21 @@ class ArchiefPlugin(
         logger.info { "Document with id '${documentId.id}' deleted successfully" }
     }
 
-    override fun getNotificatiesApiPlugin(): NotificatiesApiPlugin {
-        return notificatiesApiPluginConfiguration
-    }
+    override fun getNotificatiesApiPlugin(): NotificatiesApiPlugin = notificatiesApiPluginConfiguration
 
-    override fun getKanaalFilters(): List<Abonnement.Kanaal> {
-        return archiefProperties.map { archiefProperty ->
+    override fun getKanaalFilters(): List<Abonnement.Kanaal> =
+        archiefProperties.map { archiefProperty ->
             Abonnement.Kanaal(
                 naam = archiefProperty.kanaal,
-                filters = archiefProperty.filters.associate { filter -> filter.key to filter.value }
+                filters = archiefProperty.filters.associate { filter -> filter.key to filter.value },
             )
         }
-    }
 
-    private fun getDocumentId(zaakInstanceUrl: URI?, documentId: UUID?): UUID {
-        return when {
+    private fun getDocumentId(
+        zaakInstanceUrl: URI?,
+        documentId: UUID?,
+    ): UUID =
+        when {
             documentId != null -> {
                 logger.info { "Using provided documentId '$documentId'" }
                 documentId
@@ -123,14 +120,14 @@ class ArchiefPlugin(
 
             zaakInstanceUrl != null -> {
                 logger.info { "Looking up documentId for zaak instance URL '$zaakInstanceUrl'" }
-                val zaakInstanceLink = zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)
-                    ?: error("No document linked to zaak instance URL: $zaakInstanceUrl")
+                val zaakInstanceLink =
+                    zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)
+                        ?: error("No document linked to zaak instance URL: $zaakInstanceUrl")
                 zaakInstanceLink.documentId
             }
 
             else -> error("Either 'zaakInstanceUrl' or 'documentId' must be provided")
         }
-    }
 
     private fun getProcessName(processDefinitionId: String): String {
         val processDefinition = repositoryService.getProcessDefinition(processDefinitionId)
@@ -140,22 +137,23 @@ class ArchiefPlugin(
     private fun unlinkDocumentFromProcess(
         execution: DelegateExecution,
         processInstanceId: OperatonProcessInstanceId,
-        documentId: Document.Id
+        documentId: Document.Id,
     ) {
         if (execution.processBusinessKey == documentId.id.toString()) {
             val newBusinessKey = "DELETED:${documentId.id}"
             execution.processBusinessKey = newBusinessKey
             jdbcTemplate.update(
                 "UPDATE ACT_RU_EXECUTION SET BUSINESS_KEY_ = ? WHERE ID_ = ?",
-                newBusinessKey, execution.processInstanceId
+                newBusinessKey,
+                execution.processInstanceId,
             )
         }
         val processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
         if (processDocumentInstance.isPresent) {
             processDocumentAssociationService.deleteProcessDocumentInstance(
-                processDocumentInstance.get().processDocumentInstanceId()
+                processDocumentInstance.get().processDocumentInstanceId(),
             )
-            logger.info { "Unlinked process '${processInstanceId}' from document '${documentId.id}'" }
+            logger.info { "Unlinked process '$processInstanceId' from document '${documentId.id}'" }
         }
     }
 
