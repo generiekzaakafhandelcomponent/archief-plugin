@@ -4,16 +4,5 @@
         "activityType": "bpmn:StartEvent:start",
         "processLinkType": "form",
         "formDefinitionName": "start-form-example"
-    },
-    {
-        "activityId": "archief-action",
-        "activityType": "bpmn:ServiceTask:start",
-        "processLinkType": "plugin",
-        "pluginDefinitionKey": "archief",
-        "pluginActionDefinitionKey": "archief-action",
-        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
-        "actionProperties": {
-            "message": "Hello from the archief plugin!"
-        }
     }
 ]

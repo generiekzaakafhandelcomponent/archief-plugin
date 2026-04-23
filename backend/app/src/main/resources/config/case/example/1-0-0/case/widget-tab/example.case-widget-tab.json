@@ -6,33 +6,29 @@
                 "type": "fields",
                 "key": "process-variable-result",
                 "title": "Archief plugin Result",
+                "icon": "",
+                "color": "HIGHCONTRAST",
                 "width": 2,
                 "highContrast": true,
+                "isCompact": false,
+                "actions": [],
+                "displayConditions": [],
                 "properties": {
                     "columns": [
                         [
                             {
-                                "key": "name",
-                                "title": "Name",
-                                "value": "doc:/name",
+                                "key": "zaak-uuid",
+                                "title": "Zaak UUID",
+                                "value": "zaak:uuid",
                                 "displayProperties": {
                                     "type": "text",
                                     "hideWhenEmpty": false
                                 }
                             },
                             {
-                                "key": "message",
-                                "title": "Message",
-                                "value": "doc:/message",
-                                "displayProperties": {
-                                    "type": "text",
-                                    "hideWhenEmpty": false
-                                }
-                            },
-                            {
-                                "key": "apiResult",
-                                "title": "API Result",
-                                "value": "doc:/apiResult",
+                                "key": "zaak-url",
+                                "title": "Zaak URL",
+                                "value": "zaak:url",
                                 "displayProperties": {
                                     "type": "text",
                                     "hideWhenEmpty": false
