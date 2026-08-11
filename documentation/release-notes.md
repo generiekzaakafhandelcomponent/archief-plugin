@@ -2,5 +2,8 @@
 
 Overzicht van wijzigingen per versie van de Archief-plugin.
 
+## 1.0.0
+Ondersteuning voor Valtimo 13.40.0.
+
 ## 0.0.1-hackathon
 Eerste publieke release: automatisch archiveren of verwijderen van documenten op basis van notificaties uit de Notificaties API.
