@@ -1,6 +1,13 @@
 name: Build and publish frontend
 
 on:
+  # Allows re-publishing a project without a source change, e.g. after a failed publish.
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project under frontend/projects to build and publish'
+        required: true
+        default: 'plugin'
   push:
     paths:
       - 'frontend/**'
@@ -22,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     name: Test changed-files
     outputs:
-      matrix: ${{ steps.changed-files.outputs.all_changed_files }}
-      any_changed: ${{ steps.changed-files.outputs.any_changed }}
+      matrix: ${{ steps.resolve.outputs.matrix }}
+      any_changed: ${{ steps.resolve.outputs.any_changed }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +38,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
+        if: github.event_name != 'workflow_dispatch'
         with:
           dir_names: 'true'
           dir_names_max_depth: '1'
@@ -38,6 +46,23 @@ jobs:
           path: 'frontend/projects'
         uses: tj-actions/changed-files@v45
       # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
+
+      # A push publishes whichever projects changed; a manual run publishes the
+      # project named in the `project` input, since there is no diff to inspect.
+      - name: Resolve matrix
+        id: resolve
+        env:
+          CHANGED_MATRIX: ${{ steps.changed-files.outputs.all_changed_files }}
+          CHANGED_ANY: ${{ steps.changed-files.outputs.any_changed }}
+          PROJECT: ${{ inputs.project }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "matrix=$(jq -cn --arg p "$PROJECT" '[$p]')" >> "${GITHUB_OUTPUT}"
+            echo "any_changed=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "matrix=$CHANGED_MATRIX" >> "${GITHUB_OUTPUT}"
+            echo "any_changed=$CHANGED_ANY" >> "${GITHUB_OUTPUT}"
+          fi
 
   Build-and-publish:
     if: needs.changed_files.outputs.any_changed == 'true'
