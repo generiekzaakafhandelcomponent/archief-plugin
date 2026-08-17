@@ -2,6 +2,10 @@
 
 Overzicht van wijzigingen per versie van de Archief-plugin.
 
+## 1.0.1
+
+Valtimo bijgewerkt naar versie 13.41.0.
+
 ## 1.0.0
 Ondersteuning voor Valtimo 13.40.0.
 
